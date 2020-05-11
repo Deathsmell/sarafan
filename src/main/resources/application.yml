@@ -1,0 +1,12 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    username: postgres
+    password: ${secret}
+    url: jdbc:postgresql://localhost/sarafan
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    generate-ddl: true
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect

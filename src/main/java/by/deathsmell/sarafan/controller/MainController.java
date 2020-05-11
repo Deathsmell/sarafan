@@ -1,78 +1,54 @@
 package by.deathsmell.sarafan.controller;
 
-import by.deathsmell.sarafan.exceptions.NotFoundExceptions;
+import by.deathsmell.sarafan.domain.Message;
+import by.deathsmell.sarafan.domain.Views;
+import by.deathsmell.sarafan.repo.MessageRepo;
+import com.fasterxml.jackson.annotation.JsonView;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("message")
 public class MainController {
 
-    private int counter = 4;
+    private final MessageRepo messageRepo;
 
-    private final List<Map<String, String>> massages = new ArrayList<>() {{
-        add(new HashMap<>() {{
-            put("id", "1");
-            put("text", "First massage");
-        }});
-        add(new HashMap<>() {{
-            put("id", "2");
-            put("text", "Second massage");
-        }});
-        add(new HashMap<>() {{
-            put("id", "3");
-            put("text", "Third massage");
-        }});
-    }};
+    @Autowired
+    public MainController(MessageRepo messageRepo) {
+        this.messageRepo = messageRepo;
+    }
 
     @GetMapping
-    public List<Map<String, String>> list() {
-        return massages;
+    @JsonView(Views.IdName.class)
+    public List<Message> list() {
+        return messageRepo.findAll();
     }
 
     @GetMapping("{id}")
-    public Map<String, String> getOne(@PathVariable String id) {
-        return getMassage(id);
-    }
-
-    private Map<String, String> getMassage(@PathVariable String id) {
-        return massages
-                .stream()
-                .filter(item -> item.get("id").equals(id))
-                .findFirst()
-                .orElseThrow(NotFoundExceptions::new);
+    public Message getOne(@PathVariable("id") Message message) {
+        return message;
     }
 
     @DeleteMapping("{id}")
-    public void delete(@PathVariable String id) {
-        Map<String, String> massage = getMassage(id);
-
-        massages.remove(massage);
+    public void delete(@PathVariable("id") Message message) {
+        messageRepo.delete(message);
     }
 
     @PostMapping
-    public Map<String, String> create(@RequestBody Map<String, String> massage) {
-        massage.put("id", String.valueOf(counter++));
-
-        massages.add(massage);
-
-        return massage;
+    public Message create(@RequestBody Message massage) {
+        return messageRepo.save(massage);
     }
 
     @PutMapping("{id}")
-    public Map<String, String> update(
-            @PathVariable String id,
-            @RequestBody Map<String, String> massage
-    ) {
-        Map<String, String> massageFromDB = getMassage(id);
+    public Message update(@PathVariable("id") Message messageFromDB,
+                          @RequestBody Message message) {
 
-        massageFromDB.putAll(massage);
-        massageFromDB.put("id",id);
+        BeanUtils.copyProperties(message, messageFromDB, "id");
 
-        return massageFromDB;
+        return messageRepo.save(messageFromDB);
+
     }
 }
