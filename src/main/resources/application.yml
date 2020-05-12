@@ -1,5 +1,6 @@
 server:
   port: 8080
+
 spring:
   datasource:
     username: postgres
@@ -10,3 +11,24 @@ spring:
     generate-ddl: true
     show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+  session:
+    jdbc:
+      initialize-schema:
+      table-name: SPRING_SESSION
+      schema: classpath:session_tables.sql
+  freemarker:
+    suffix: .ftlh
+
+
+security:
+  oauth2:
+    client:
+      client-id: ${some-secret}
+      client-secret: ${very-secret}
+      authentication-scheme: form
+      scope: openid,email,profile
+      access-token-uri: https://www.googleapis.com/oauth2/v4/token
+      user-authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+    resource:
+      user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+      prefer-token-info: true
