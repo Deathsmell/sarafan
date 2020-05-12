@@ -6,6 +6,8 @@ import by.deathsmell.sarafan.repo.MessageRepo;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,6 +51,11 @@ public class MessageController {
         BeanUtils.copyProperties(message, messageFromDB, "id");
 
         return messageRepo.save(messageFromDB);
+    }
 
+    @MessageMapping("/changeMessage")
+    @SendTo("/topic/activity")
+    public Message change(Message message){
+        return messageRepo.save(message);
     }
 }

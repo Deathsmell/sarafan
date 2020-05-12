@@ -8,10 +8,12 @@ module.exports = {
     devServer: {
         contentBase: './dist',
         compress: true,
-        port: 8050,
+        port: 8060,
         allowedHosts: [
             'localhost:8080'
-        ]
+        ],
+        stats: 'errors-only',
+        clientLogLevel: 'error',
     },
     module: {
         rules: [
